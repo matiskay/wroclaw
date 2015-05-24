@@ -81,3 +81,7 @@ int queue_string_is_empty(QueueString* queue) {
 void queue_string_free(QueueString* queue) {
   free(queue);
 }
+
+int queue_string_number_of_elements(QueueString* queue_string) {
+  return queue_string->current_position;
+}

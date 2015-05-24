@@ -2,10 +2,11 @@
 #include <stdio.h>
 #include <string.h>
 #include "functions.h"
+#include "queue_string.h"
 
 #define ASCII_CODE_EMPTY_SPACE ' '
 #define ASCII_CODE_END_OF_STRING '\0'
-#define DEBUG 0
+#define DEBUG 1
 
 /**
  * TODO: Change comments to slash star. Hint: grep -nR '//' .
@@ -29,6 +30,8 @@ void parser(char* expression) {
   char string[128];
   int string_index = 0;
   int index;
+  QueueString* queue_string;
+  queue_string = queue_string_create();
 
   /*
   printf("Hello from parser. \n");
@@ -45,8 +48,11 @@ void parser(char* expression) {
       /* Avoid empty spaces as tokens */
       if (string_index > 1) {
         string[string_index] = ASCII_CODE_END_OF_STRING;
+
+        queue_string_insert(queue_string, string);
+
         if (DEBUG) {
-          printf("Current Token:   %s --- %lu \n", string, strlen(string));
+          printf("(1) Current Token:   %s --- %lu \n", string, strlen(string));
         }
         string_index = 0;
       }
@@ -54,9 +60,12 @@ void parser(char* expression) {
       // Process string operator and continue to next iteration
       string[string_index] = expression[index];
       string[string_index + 1] = ASCII_CODE_END_OF_STRING;
+      queue_string_insert(queue_string, string);
+
       if (DEBUG) {
-        printf("Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
+        printf("(2) Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
       }
+
       string_index = 0;
       continue;
     }
@@ -64,9 +73,10 @@ void parser(char* expression) {
     if (expression[index] == ASCII_CODE_EMPTY_SPACE && string_index != 0) {
       //printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]);
       string[string_index] = ASCII_CODE_END_OF_STRING;
+      queue_string_insert(queue_string, string);
 
       if (DEBUG) {
-        printf("Current Token:   %s --- %lu \n", string, strlen(string));
+        printf("(3) Current Token:   %s --- %lu \n", string, strlen(string));
       }
 
       string_index = 0;
@@ -81,13 +91,19 @@ void parser(char* expression) {
 
   // Process the final string
   if (expression[index] == ASCII_CODE_END_OF_STRING) {
-    string[string_index] = ASCII_CODE_END_OF_STRING;
+    // Exclude empty strings
+    if (string_index > 0) {
+      string[string_index] = ASCII_CODE_END_OF_STRING;
+      queue_string_insert(queue_string, string);
 
-    if (DEBUG) {
-      printf("Current Token:   %s -- %lu \n", string, strlen(string));
+      if (DEBUG) {
+        printf("(3) Current Token:   %s -- %lu \n", string, strlen(string));
+      }
+      string_index = 0;
     }
-    string_index = 0;
   }
+
+  queue_string_display(queue_string);
 }
 
 int is_single_string_operator(char character) {

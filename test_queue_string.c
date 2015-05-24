@@ -14,6 +14,10 @@
 #define KWHT  "\x1B[37m"
 #define RESET "\033[0m"
 
+/*
+ * TODO: Add failed test to summary.
+ */
+
 int tests_run = 0;
 
 static char * test_queue_string_insert() {
@@ -30,6 +34,37 @@ static char * test_queue_string_insert() {
   mu_assert("edgar != edgar", strcmp("edgar", queue_string_pop(queue)) == 0);
   mu_assert("juan != juan", strcmp("juan", queue_string_pop(queue)) == 0);
   mu_assert("javier != javier", strcmp("javier", queue_string_pop(queue)) == 0);
+  return 0;
+}
+
+static char * test_queue_string_number_of_elements() {
+  QueueString* queue;
+  queue = queue_string_create();
+
+  queue_string_insert(queue, "edgar");
+  queue_string_insert(queue, "juan");
+  queue_string_insert(queue, "javier");
+  queue_string_insert(queue, "walter");
+  queue_string_insert(queue, "diego");
+  queue_string_insert(queue, "carlos");
+
+  mu_assert("Failed test_queue_string_number_of_elements", queue_string_number_of_elements(queue) == 6);
+  return 0;
+}
+
+static char * test_queue_string_number_of_elements_counting_again() {
+  QueueString* queue;
+  queue = queue_string_create();
+
+  queue_string_insert(queue, "edgar");
+  queue_string_insert(queue, "juan");
+  queue_string_insert(queue, "javier");
+  queue_string_insert(queue, "walter");
+  queue_string_insert(queue, "diego");
+  queue_string_insert(queue, "carlos");
+  queue_string_number_of_elements(queue);
+
+  mu_assert("Failed test_queue_string_number_of_elements_counting_again", queue_string_number_of_elements(queue) == 6);
   return 0;
 }
 
@@ -80,6 +115,8 @@ static char * all_tests() {
   mu_run_test(test_queue_string_is_empty);
   mu_run_test(test_queue_string_is_not_empty);
   mu_run_test(test_queue_string_pop_in_an_empty_queue_string);
+  mu_run_test(test_queue_string_number_of_elements);
+  mu_run_test(test_queue_string_number_of_elements_counting_again);
   return 0;
 }
 
