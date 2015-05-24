@@ -15,8 +15,14 @@
 int tests_run = 0;
 
 static char * test_parser() {
-  //char expression[256] = "2 + 3";  
-  char expression[256] = "2.0 + 3.0";  
+  //char expression[256] = "2 + 3";
+  //char expression[256] = "2.0 + 3.0";
+  //char expression[256] = "2.0+3.0";
+  //char expression[256] = "2.0+ 3.0 - 4.0";
+  //char expression[256] = "2.0 + 3.0 - 4.0";
+  //char expression[256] = "2.0+3.0-4.0";
+
+  char expression[256] = "2.0 sqrt";
 
   parser(expression);
   mu_assert("test_parser failed: \n   error, test_parser 1 != 1", 1 == 1);
