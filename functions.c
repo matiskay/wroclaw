@@ -6,6 +6,11 @@
 #define ASCII_CODE_EMPTY_SPACE ' '
 #define ASCII_CODE_END_OF_STRING '\0'
 #define DEBUG 0
+
+/**
+ * TODO: Change comments to slash star. Hint: grep -nR '//' .
+ */
+
 /* Lessons:
  *    * If you work with string check always the length of the string. The empty spaces can
  *    lead to bugs.
@@ -70,8 +75,6 @@ void parser(char* expression) {
     // Don't count empty spaces
     if (expression[index] != ASCII_CODE_EMPTY_SPACE) {
       string[string_index] = expression[index];
-//      printf(" --> Current value of the string %c at index %i and integer value %d \n", string[string_index], string_index, string[string_index]);
-      //printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]);
       string_index++;
     }
   }
