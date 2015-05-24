@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <string.h>
+
 #include "minunit.h"
 #include "queue_string.h"
 
@@ -14,6 +16,50 @@
 
 int tests_run = 0;
 
+static char * test_queue_string_insert() {
+  QueueString* queue;
+  queue = queue_string_create();
+
+  queue_string_insert(queue, "edgar");
+  queue_string_insert(queue, "juan");
+  queue_string_insert(queue, "javier");
+  queue_string_insert(queue, "walter");
+  queue_string_insert(queue, "diego");
+  queue_string_insert(queue, "carlos");
+
+  mu_assert("edgar != edgar", strcmp("edgar", queue_string_pop(queue)) == 0);
+  mu_assert("juan != juan", strcmp("juan", queue_string_pop(queue)) == 0);
+  mu_assert("javier != javier", strcmp("javier", queue_string_pop(queue)) == 0);
+  return 0;
+}
+
+static char * test_queue_string_pop() {
+  QueueString* queue;
+  queue = queue_string_create();
+
+  queue_string_insert(queue, "101010");
+  mu_assert("101010 != 101010", strcmp("101010", queue_string_pop(queue)) == 0);
+  return 0;
+}
+
+static char * test_queue_string_is_empty() {
+  QueueString* queue;
+  queue = queue_string_create();
+
+  mu_assert("Failed test_queue_string_is_empty", queue_string_is_empty(queue) == 1);
+  return 0;
+}
+
+static char * test_queue_string_is_not_empty() {
+  QueueString* queue;
+  queue = queue_string_create();
+  queue_string_insert(queue, "walter");
+
+  mu_assert("Failed test_queue_string_is_not_empty", queue_string_is_empty(queue) == 0);
+  return 0;
+}
+
+
 static char * test_unit() {
   mu_assert("test_unit failed: \n   error, test_unit 1 != 1", 1 == 1);
   return 0;
@@ -21,6 +67,9 @@ static char * test_unit() {
 
 static char * all_tests() {
   mu_run_test(test_unit);
+  mu_run_test(test_queue_string_insert);
+  mu_run_test(test_queue_string_pop);
+  mu_run_test(test_queue_string_is_empty);
   return 0;
 }
 
