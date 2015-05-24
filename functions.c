@@ -5,6 +5,7 @@
 
 #define ASCII_CODE_EMPTY_SPACE ' '
 #define ASCII_CODE_END_OF_STRING '\0'
+#define DEBUG 0
 /* Lessons:
  *    * If you work with string check always the length of the string. The empty spaces can
  *    lead to bugs.
@@ -24,27 +25,33 @@ void parser(char* expression) {
   int string_index = 0;
   int index;
 
+  /*
   printf("Hello from parser. \n");
   printf("Value %s \n", expression);
 
   printf("Value %c \n", expression[0]);
+  */
   
 
   for (index = 0; expression[index] != ASCII_CODE_END_OF_STRING; index++) {
 
-    if (is_single_string_operator(expression[index])) {
+    if (is_single_string_operator(expression[index]) || is_parentesis(expression[index])) {
 
       /* Avoid empty spaces as tokens */
       if (string_index > 1) {
         string[string_index] = ASCII_CODE_END_OF_STRING;
-        printf("Current Token:   %s --- %lu \n", string, strlen(string));
+        if (DEBUG) {
+          printf("Current Token:   %s --- %lu \n", string, strlen(string));
+        }
         string_index = 0;
       }
 
       // Process string operator and continue to next iteration
       string[string_index] = expression[index];
       string[string_index + 1] = ASCII_CODE_END_OF_STRING;
-      printf("Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
+      if (DEBUG) {
+        printf("Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
+      }
       string_index = 0;
       continue;
     }
@@ -53,14 +60,17 @@ void parser(char* expression) {
       //printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]);
       string[string_index] = ASCII_CODE_END_OF_STRING;
 
-      printf("Current Token:   %s --- %lu \n", string, strlen(string));
+      if (DEBUG) {
+        printf("Current Token:   %s --- %lu \n", string, strlen(string));
+      }
+
       string_index = 0;
     }
 
     // Don't count empty spaces
     if (expression[index] != ASCII_CODE_EMPTY_SPACE) {
       string[string_index] = expression[index];
-      printf(" --> Current value of the string %c at index %i and integer value %d \n", string[string_index], string_index, string[string_index]);
+//      printf(" --> Current value of the string %c at index %i and integer value %d \n", string[string_index], string_index, string[string_index]);
       //printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]);
       string_index++;
     }
@@ -70,7 +80,9 @@ void parser(char* expression) {
   if (expression[index] == ASCII_CODE_END_OF_STRING) {
     string[string_index] = ASCII_CODE_END_OF_STRING;
 
-    printf("Current Token:   %s -- %lu \n", string, strlen(string));
+    if (DEBUG) {
+      printf("Current Token:   %s -- %lu \n", string, strlen(string));
+    }
     string_index = 0;
   }
 }
@@ -81,6 +93,16 @@ int is_single_string_operator(char character) {
     case '-':
     case '*':
     case '/':
+      return 1;
+  }
+  return 0;
+}
+
+
+int is_parentesis(char character) {
+  switch (character) {
+    case '(':
+    case ')':
       return 1;
   }
   return 0;

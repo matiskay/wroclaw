@@ -22,7 +22,8 @@ static char * test_parser() {
   //char expression[256] = "2.0 + 3.0 - 4.0";
   //char expression[256] = "2.0+3.0-4.0";
 
-  char expression[256] = "2.0 sqrt";
+  //char expression[256] = "2.0 sqrt";
+  char expression[256] = "sqrt((53 + 21) * 2 – sqrt(29 + 3 * 25))";
 
   parser(expression);
   mu_assert("test_parser failed: \n   error, test_parser 1 != 1", 1 == 1);
