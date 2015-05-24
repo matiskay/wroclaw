@@ -42,6 +42,14 @@ static char * test_queue_string_pop() {
   return 0;
 }
 
+static char * test_queue_string_pop_in_an_empty_queue_string() {
+  QueueString* queue;
+  queue = queue_string_create();
+
+  mu_assert("Failed test_queue_string_pop_in_an_empty_queue_string", queue_string_pop(queue) == NULL);
+  return 0;
+}
+
 static char * test_queue_string_is_empty() {
   QueueString* queue;
   queue = queue_string_create();
@@ -70,6 +78,8 @@ static char * all_tests() {
   mu_run_test(test_queue_string_insert);
   mu_run_test(test_queue_string_pop);
   mu_run_test(test_queue_string_is_empty);
+  mu_run_test(test_queue_string_is_not_empty);
+  mu_run_test(test_queue_string_pop_in_an_empty_queue_string);
   return 0;
 }
 

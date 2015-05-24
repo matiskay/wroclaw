@@ -51,8 +51,7 @@ void queue_string_insert(QueueString* queue, char* string) {
 char* queue_string_pop(QueueString* queue) {
   char *data;
   if (queue_string_is_empty(queue)) {
-    printf("Empty Queue \n");
-    exit(ERROR_EMPTY_QUEUE);
+    return NULL;
   }
 
   data = queue->data[queue->initial_position];
