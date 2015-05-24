@@ -14,6 +14,15 @@
 
 int tests_run = 0;
 
+static char * test_parser() {
+  //char expression[256] = "2 + 3";  
+  char expression[256] = "2.0 + 3.0";  
+
+  parser(expression);
+  mu_assert("test_parser failed: \n   error, test_parser 1 != 1", 1 == 1);
+  return 0;
+}
+
 static char * test_unit() {
   mu_assert("test_unit failed: \n   error, test_unit 1 != 1", 1 == 1);
   return 0;
@@ -21,6 +30,7 @@ static char * test_unit() {
 
 static char * all_tests() {
   mu_run_test(test_unit);
+  mu_run_test(test_parser);
   return 0;
 }
 
