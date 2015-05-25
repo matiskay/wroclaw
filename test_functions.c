@@ -327,6 +327,37 @@ static char * test_polish_parser_parentesis() {
   return 0;
 }
 
+static char * test_parser_parentesis() {
+  
+  char expression[256] = "6 * (4 + 5) - 25 / ( 2 + 3 )";
+  QueueString* queue; 
+  QueueString* queue_final; 
+
+  queue = queue_string_create();
+
+  queue_final = queue_string_create();
+  queue_string_insert(queue_final, "6");
+  queue_string_insert(queue_final, "*");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "4");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "5");
+  queue_string_insert(queue_final, ")");
+  queue_string_insert(queue_final, "-");
+  queue_string_insert(queue_final, "25");
+  queue_string_insert(queue_final, "/");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "2");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "3");
+  queue_string_insert(queue_final, ")");
+
+
+  queue = parser(expression);
+  mu_assert("test_parser failed: \n   error, test_parser 1 != 1", queue_string_equal(queue, queue_final) == 1);
+  return 0;
+}
+
 static char * test_parser() {
   //char expression[256] = "2 + 3";
   //char expression[256] = "2.0 + 3.0";
@@ -377,7 +408,9 @@ static char * test_parser_sqrt_and_parentesis_expression() {
   queue = parser(expression);
 
   /*
+  printf("Problem \n");
   queue_string_display(queue);
+  printf("\n ------------------ \n");
   queue_string_display(queue_final);
   */
 
@@ -386,13 +419,6 @@ static char * test_parser_sqrt_and_parentesis_expression() {
 }
 
 static char * test_parser_complex_expression() {
-  //char expression[256] = "2 + 3";
-  //char expression[256] = "2.0 + 3.0";
-  //char expression[256] = "2.0+3.0";
-  //char expression[256] = "2.0+ 3.0 - 4.0";
-  //char expression[256] = "2.0 + 3.0 - 4.0";
-  //char expression[256] = "2.0+3.0-4.0";
-  //char expression[256] = "(4.0 + 5.0)";
   char expression[256] = "sqrt((53 + 21) * 2 - sqrt(29 + 3 * 25))";
   
   QueueString* queue; 
@@ -424,11 +450,14 @@ static char * test_parser_complex_expression() {
 
   queue = parser(expression);
 
-  /*
   printf("number of elements queue %d \n", queue_string_number_of_elements(queue));
   printf("number of elements queue final %d \n", queue_string_number_of_elements(queue_final));
 
+
+  /*
+  printf("-------------------------- \n");
   queue_string_display(queue);
+  printf("\n ----------------------- \n");
   queue_string_display(queue_final);
   */
 
@@ -481,6 +510,7 @@ static char * all_tests() {
   mu_run_test(test_polish_parser_example_2);
   mu_run_test(test_polish_parser_example_3);
   mu_run_test(test_polish_parser_example_4);
+  mu_run_test(test_parser_parentesis);
   return 0;
 }
 

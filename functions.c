@@ -46,7 +46,7 @@ QueueString* parser(char* expression) {
     if (is_single_string_operator(expression[index]) || is_parentesis(expression[index])) {
 
       /* Avoid empty spaces as tokens */
-      if (string_index > 1) {
+      if (string_index >= 1) {
         string[string_index] = ASCII_CODE_END_OF_STRING;
 
         queue_string_insert(queue_string, string);
