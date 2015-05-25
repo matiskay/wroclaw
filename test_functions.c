@@ -450,8 +450,10 @@ static char * test_parser_complex_expression() {
 
   queue = parser(expression);
 
+  /*
   printf("number of elements queue %d \n", queue_string_number_of_elements(queue));
   printf("number of elements queue final %d \n", queue_string_number_of_elements(queue_final));
+  */
 
 
   /*
