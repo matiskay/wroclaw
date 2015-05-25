@@ -192,6 +192,10 @@ QueueString* polish_parser(QueueString* queue_expression) {
   return queue_string_output;
 }
 
+float polish_evaluation(QueueString *queue_expression) {
+  return 0.0;
+}
+
 int is_single_string_operator(char character) {
   switch (character) {
     case '+':
