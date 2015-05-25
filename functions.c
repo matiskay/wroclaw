@@ -1,8 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 #include <string.h>
 #include "functions.h"
 #include "stack_string.h"
+#include "stack_float.h"
 
 #define ASCII_CODE_EMPTY_SPACE ' '
 #define ASCII_CODE_END_OF_STRING '\0'
@@ -57,7 +59,7 @@ QueueString* parser(char* expression) {
         string_index = 0;
       }
 
-      // Process string operator and continue to next iteration
+      /* Process string operator and continue to next iteration */
       string[string_index] = expression[index];
       string[string_index + 1] = ASCII_CODE_END_OF_STRING;
       queue_string_insert(queue_string, string);
@@ -71,7 +73,7 @@ QueueString* parser(char* expression) {
     }
 
     if (expression[index] == ASCII_CODE_EMPTY_SPACE && string_index != 0) {
-      //printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]);
+      /* printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]); */
       string[string_index] = ASCII_CODE_END_OF_STRING;
       queue_string_insert(queue_string, string);
 
@@ -82,16 +84,16 @@ QueueString* parser(char* expression) {
       string_index = 0;
     }
 
-    // Don't count empty spaces
+    /* Don't count empty spaces */
     if (expression[index] != ASCII_CODE_EMPTY_SPACE) {
       string[string_index] = expression[index];
       string_index++;
     }
   }
 
-  // Process the final string
+  /* Process the final string */
   if (expression[index] == ASCII_CODE_END_OF_STRING) {
-    // Exclude empty strings
+    /* Exclude empty strings */
     if (string_index > 0) {
       string[string_index] = ASCII_CODE_END_OF_STRING;
       queue_string_insert(queue_string, string);
@@ -156,7 +158,7 @@ QueueString* polish_parser(QueueString* queue_expression) {
     }
   }
 
-  // Push the remaining operators.
+  /* Push the remaining operators. */
   while (stack_string_is_empty(stack_string_operators) == 0) {
     data = stack_string_pop(stack_string_operators);
     if (strcmp(data, "(") != 0 && strcmp(data, ")") != 0) {
@@ -192,8 +194,66 @@ QueueString* polish_parser(QueueString* queue_expression) {
   return queue_string_output;
 }
 
-float polish_evaluation(QueueString *queue_expression) {
-  return 0.0;
+float polish_evaluation(QueueString *queue_polish_expression) {
+  float total;
+  float number;
+  float value1;
+  float value2;
+  char* data;
+  StackFloat* stack;
+
+  stack = stack_float_create();
+
+  while (!queue_string_is_empty(queue_polish_expression)) {
+    data = queue_string_pop(queue_polish_expression);
+
+    /* Is data is an operator */
+    if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
+        || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
+        || strcmp(data, "sqrt") == 0
+        ) {
+
+      if (strcmp(data, "+") == 0) {
+        value2 = stack_float_pop(stack);
+        value1 = stack_float_pop(stack);
+        total = value1 + value2;
+
+        stack_float_push(stack, total);
+      } else if (strcmp(data, "-") == 0) {
+        value2 = stack_float_pop(stack);
+        value1 = stack_float_pop(stack);
+
+        total = value1 - value2;
+
+        stack_float_push(stack, total);
+      } else if (strcmp(data, "*") == 0) {
+        value2 = stack_float_pop(stack);
+        value1 = stack_float_pop(stack);
+
+        total = value1 * value2;
+
+        stack_float_push(stack, total);
+      } else if (strcmp(data, "/") == 0) {
+        value2 = stack_float_pop(stack);
+        value1 = stack_float_pop(stack);
+
+        /* TODO: Handle division by zero. */
+        total = value1 / value2;
+
+        stack_float_push(stack, total);
+      } else if (strcmp(data, "sqrt") == 0) {
+        value1 = stack_float_pop(stack);
+        total = sqrt(value1);
+
+        stack_float_push(stack, total);
+      }
+    } else {
+      number = atof(data);
+      stack_float_push(stack, number);
+    }
+  }
+  
+  return total;
 }
 
 int is_single_string_operator(char character) {

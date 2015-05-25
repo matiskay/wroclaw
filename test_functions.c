@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "minunit.h"
 #include "functions.h"
+#include "math.h"
 
 #define KNRM  "\x1B[0m"
 #define KRED  "\x1B[31m"
@@ -11,10 +12,6 @@
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
 #define RESET "\033[0m"
-
-/*
- * TODO: Fix the parser of parentesis.
- * */
 
 int tests_run = 0;
 
@@ -38,6 +35,58 @@ static char * test_precedence_sqrt() {
   return 0;
 }
 
+static char * test_polish_evaluation_example2() {
+  /* Don't forget to take care of the polish evaluation it will remove all the elements from the queue */
+  char expression[256] = "sqrt(5 * 5)";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", fabs(polish_evaluation(queue_polish) -  5.0) < 0.01);
+  return 0;
+}
+
+static char * test_polish_evaluation_example1() {
+  char expression[256] = "(1 + 2) + (3 + 4) + 5";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", polish_evaluation(queue_polish) == 15);
+  return 0;
+}
+
+static char * test_polish_evaluation() {
+  char expression[256] = "5 + 3";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", polish_evaluation(queue_polish) == 8);
+  return 0;
+}
+
 static char * test_polish_parser_example_2() {
   char expression[256] = "5 + ( ( 1 + 2 )  * 4 ) - 3";
 
@@ -48,7 +97,7 @@ static char * test_polish_parser_example_2() {
   queue = queue_string_create();
   queue_polish = queue_string_create();
   queue_polish_result = queue_string_create();
-  // 21 53 + 2 * 25 3 * 29 + sqrt - sqrt
+  /* 21 53 + 2 * 25 3 * 29 + sqrt - sqrt */
   queue_string_insert(queue_polish_result, "5");
   queue_string_insert(queue_polish_result, "1");
   queue_string_insert(queue_polish_result, "2");
@@ -77,8 +126,10 @@ static char * test_polish_parser_example_2() {
 }
 
 static char * test_polish_parser_example_4() {
-  // (sqrt(b * b - 4 * a * c) - b) / (2 * a)
-  // b b * 4 a * c * - sqrt b - 2 a * /
+  /**
+   * (sqrt(b * b - 4 * a * c) - b) / (2 * a) 
+   * ---> b b * 4 a * c * - sqrt b - 2 a * /
+   **/
   char expression[256] = "( sqrt ( b * b - 4 * a * c ) - b ) / ( 2 * a )";
 
   QueueString* queue; 
@@ -88,9 +139,7 @@ static char * test_polish_parser_example_4() {
   queue = queue_string_create();
   queue_polish = queue_string_create();
   queue_polish_result = queue_string_create();
-  // 52 1 2 + 4 * 3 -
-  // 52 1 2 + 4 * 3 -
-  // b b * 4 a * c * - sqrt b - 2 a * /
+
   queue_string_insert(queue_polish_result, "b");
   queue_string_insert(queue_polish_result, "b");
   queue_string_insert(queue_polish_result, "*");
@@ -134,7 +183,7 @@ static char * test_polish_parser_example_3() {
   queue = queue_string_create();
   queue_polish = queue_string_create();
   queue_polish_result = queue_string_create();
-  // 52 1 + 2 + 4 * 3 -
+  /* 52 1 + 2 + 4 * 3 - */
   queue_string_insert(queue_polish_result, "52");
   queue_string_insert(queue_polish_result, "1");
   queue_string_insert(queue_polish_result, "+");
@@ -165,7 +214,7 @@ static char * test_polish_parser_example_1() {
   queue = queue_string_create();
   queue_polish = queue_string_create();
   queue_polish_result = queue_string_create();
-  // 21 53 + 2 * 25 3 * 29 + sqrt - sqrt
+
   queue_string_insert(queue_polish_result, "6");
   queue_string_insert(queue_polish_result, "4");
   queue_string_insert(queue_polish_result, "5");
@@ -198,7 +247,7 @@ static char * test_polish_parser_big_expression() {
   queue = queue_string_create();
   queue_polish = queue_string_create();
   queue_polish_result = queue_string_create();
-  // 21 53 + 2 * 25 3 * 29 + sqrt - sqrt
+
   queue_string_insert(queue_polish_result, "6");
   queue_string_insert(queue_polish_result, "4");
   queue_string_insert(queue_polish_result, "1");
@@ -359,14 +408,16 @@ static char * test_parser_parentesis() {
 }
 
 static char * test_parser() {
-  //char expression[256] = "2 + 3";
-  //char expression[256] = "2.0 + 3.0";
-  //char expression[256] = "2.0+3.0";
-  //char expression[256] = "2.0+ 3.0 - 4.0";
-  //char expression[256] = "2.0 + 3.0 - 4.0";
-  //char expression[256] = "2.0+3.0-4.0";
-  //char expression[256] = "(4.0 + 5.0)";
-  //char expression[256] = "sqrt((53 + 21) * 2 – sqrt(29 + 3 * 25))";
+  /*
+  char expression[256] = "2 + 3";
+  char expression[256] = "2.0 + 3.0";
+  char expression[256] = "2.0+3.0";
+  char expression[256] = "2.0+ 3.0 - 4.0";
+  char expression[256] = "2.0 + 3.0 - 4.0";
+  char expression[256] = "2.0+3.0-4.0";
+  char expression[256] = "(4.0 + 5.0)";
+  char expression[256] = "sqrt((53 + 21) * 2 – sqrt(29 + 3 * 25))";
+  */
   
   char expression[256] = "2.0 sqrt";
   QueueString* queue; 
@@ -467,7 +518,6 @@ static char * test_parser_complex_expression() {
   return 0;
 }
 
-
 static char * test_parser_simple_expression() {
   char expression[256] = "2 + 3";
   
@@ -513,6 +563,9 @@ static char * all_tests() {
   mu_run_test(test_polish_parser_example_3);
   mu_run_test(test_polish_parser_example_4);
   mu_run_test(test_parser_parentesis);
+  mu_run_test(test_polish_evaluation);
+  mu_run_test(test_polish_evaluation_example1);
+  mu_run_test(test_polish_evaluation_example2);
   return 0;
 }
 
