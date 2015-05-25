@@ -37,7 +37,7 @@ static char * test_precedence_sqrt() {
 
 static char * test_polish_evaluation_example2() {
   /* Don't forget to take care of the polish evaluation it will remove all the elements from the queue */
-  char expression[256] = "sqrt(5 * 5)";
+  char expression[256] = "sqrt(5 * 5 - 9)";
 
   QueueString* queue; 
   QueueString* queue_polish; 
@@ -49,7 +49,7 @@ static char * test_polish_evaluation_example2() {
   queue = parser(expression);
   queue_polish = polish_parser(queue);
 
-  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", fabs(polish_evaluation(queue_polish) -  5.0) < 0.01);
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", fabs(polish_evaluation(queue_polish) -  4.0) < 0.01);
   return 0;
 }
 
