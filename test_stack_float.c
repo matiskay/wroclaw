@@ -15,6 +15,38 @@
 
 int tests_run = 0;
 
+static char * test_stack_float_pop() {
+  StackFloat* stack;
+  stack = stack_float_create();
+  stack_float_push(stack, 34);
+
+  mu_assert("error, test_stack_pop stack_pop(stack) != 34", stack_float_pop(stack) == 34);
+  mu_assert("error, test_stack_pop stack_is_empty(stack) != 0", stack_float_is_empty(stack) == 0);
+  return 0;
+}
+
+static char * test_stack_float_peep() {
+  StackFloat* stack;
+  stack = stack_float_create();
+  stack_float_push(stack, 34);
+
+  mu_assert("error, test_stack_peep stack_peep(stack) != 34", stack_float_peep(stack) == 34);
+  mu_assert("error, test_stack_peep stack_is_empty(stack) != 0", stack_float_is_empty(stack) != 0);
+  return 0;
+}
+
+static char * test_stack_float_is_empty() {
+  StackFloat* stack;
+  stack = stack_float_create();
+
+  mu_assert("error, test_empty_stack stack_is_empty(stack) != 0", stack_float_is_empty(stack) == 0);
+
+  stack_float_free(stack);
+
+  return 0;
+}
+
+
 static char * test_unit() {
   mu_assert("test_unit failed: \n   error, test_unit 1 != 1", 1 == 1);
   return 0;
@@ -22,6 +54,9 @@ static char * test_unit() {
 
 static char * all_tests() {
   mu_run_test(test_unit);
+  mu_run_test(test_stack_float_pop);
+  mu_run_test(test_stack_float_peep);
+  mu_run_test(test_stack_float_is_empty);
   return 0;
 }
 
