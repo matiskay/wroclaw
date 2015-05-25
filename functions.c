@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "functions.h"
+#include "stack_string.h"
 
 #define ASCII_CODE_EMPTY_SPACE ' '
 #define ASCII_CODE_END_OF_STRING '\0'
@@ -113,6 +114,12 @@ QueueString* parser(char* expression) {
 
 QueueString* polish_parser(QueueString* queue_expression) {
   char* data;
+
+  QueueString* queue_string_output;
+  StackString* stack_string_operators;
+
+  queue_string_output = queue_string_create();
+  stack_string_operators = stack_string_create();
 
   queue_string_display(queue_expression);
 

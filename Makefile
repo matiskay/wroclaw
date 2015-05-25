@@ -18,8 +18,9 @@ test_queue_string: clean
 test_functions: clean
 	 gcc -c functions.c
 	 gcc -c queue_string.c
+	 gcc -c stack_string.c
 	 gcc -c test_functions.c
-	 gcc -o test_functions functions.o test_functions.o queue_string.o
+	 gcc -o test_functions functions.o test_functions.o queue_string.o stack_string.o
 	 ./test_functions
 
 test:	 test_stack_string test_functions test_queue_string
