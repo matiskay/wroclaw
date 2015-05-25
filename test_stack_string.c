@@ -33,6 +33,16 @@ static char * test_stack_string_is_empty() {
 }
 
 
+static char * test_stack_string_is_not_empty() {
+  StackString * stack;
+  stack = stack_string_create();
+  stack_string_push(stack, "edgar");
+
+  mu_assert("test_stack_string_push", stack_string_is_empty(stack) == 0);
+  return 0;
+}
+
+
 static char * test_unit() {
   mu_assert("test_unit failed: \n   error, test_unit 1 != 1", 1 == 1);
   return 0;
@@ -41,6 +51,8 @@ static char * test_unit() {
 static char * all_tests() {
   mu_run_test(test_unit);
   mu_run_test(test_stack_string_push);
+  mu_run_test(test_stack_string_is_empty);
+  mu_run_test(test_stack_string_is_not_empty);
   return 0;
 }
 

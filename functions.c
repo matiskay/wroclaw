@@ -121,14 +121,75 @@ QueueString* polish_parser(QueueString* queue_expression) {
   queue_string_output = queue_string_create();
   stack_string_operators = stack_string_create();
 
+  /*
   queue_string_display(queue_expression);
+  */
 
   while (! queue_string_is_empty(queue_expression)) {
     data = queue_string_pop(queue_expression);
-    printf("data: %s \n", data);
+
+    if (strcmp(data, "(") == 0) {
+      stack_string_push(stack_string_operators, data);
+
+    } else if (strcmp(data, ")") == 0) {
+      while (strcmp(stack_string_peep(stack_string_operators), "(") != 0) {
+        queue_string_insert(queue_string_output, stack_string_pop(stack_string_operators));
+      }
+      data = stack_string_pop(stack_string_operators);
+    } else if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
+              || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
+              || strcmp(data, "sqrt") == 0) {
+
+      while (stack_string_is_empty(stack_string_operators) == 0
+            && (precedence(data) <= precedence(stack_string_peep(stack_string_operators)))) {
+        queue_string_insert(queue_string_output, stack_string_pop(stack_string_operators));
+      }
+
+      stack_string_push(stack_string_operators, data);
+
+      if (DEBUG) {
+        printf("-----> Operators:   %s \n", stack_string_peep(stack_string_operators));
+      }
+
+    } else {
+      queue_string_insert(queue_string_output, data);
+    }
   }
 
-  return NULL;
+  // Push the remaining operators.
+  while (stack_string_is_empty(stack_string_operators) == 0) {
+    data = stack_string_pop(stack_string_operators);
+    if (strcmp(data, "(") != 0 && strcmp(data, ")") != 0) {
+      queue_string_insert(queue_string_output, data);
+    }
+  }
+
+  /* Parse only the reaming operators */
+  while (stack_string_is_empty(stack_string_operators) == 0) {
+    if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
+              || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
+              || strcmp(data, "sqrt") == 0) {
+      queue_string_insert(queue_string_output, stack_string_pop(stack_string_operators));
+    }
+    stack_string_pop(stack_string_operators);
+  }
+
+  /*
+  stack_string_push(stack_string_operators, data);
+  */
+
+  /*
+  while (!stack_string_is_empty(stack_string_operators)) {
+    printf("value in the stack:   %s\n", stack_string_pop(stack_string_operators));
+  }
+  */
+
+  /*
+  printf("Polish Notation Result:   \n");
+  queue_string_display_inline(queue_string_output);
+  printf("\n");
+  */
+  return queue_string_output;
 }
 
 int is_single_string_operator(char character) {

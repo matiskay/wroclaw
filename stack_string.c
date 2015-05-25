@@ -47,5 +47,5 @@ void stack_string_free(StackString* stack) {
 }
 
 int stack_string_is_empty(StackString* stack) {
-  return (stack->index != 0);
+  return (stack->index == 0);
 }

@@ -12,6 +12,10 @@
 #define KWHT  "\x1B[37m"
 #define RESET "\033[0m"
 
+/*
+ * TODO: Fix the parser of parentesis.
+ * */
+
 int tests_run = 0;
 
 static char * test_precedence_no_defined() {
@@ -34,22 +38,292 @@ static char * test_precedence_sqrt() {
   return 0;
 }
 
-static char * test_polish_parser() {
-  
-  char expression[256] = "2.0 + 3.0";
+static char * test_polish_parser_example_2() {
+  char expression[256] = "5 + ( ( 1 + 2 )  * 4 ) - 3";
+
   QueueString* queue; 
-  QueueString* queue_final; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
 
   queue = queue_string_create();
-
-  queue_final = queue_string_create();
-  queue_string_insert(queue_final, "2.0");
-  queue_string_insert(queue_final, "+");
-  queue_string_insert(queue_final, "3.0");
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+  // 21 53 + 2 * 25 3 * 29 + sqrt - sqrt
+  queue_string_insert(queue_polish_result, "5");
+  queue_string_insert(queue_polish_result, "1");
+  queue_string_insert(queue_polish_result, "2");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "4");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "3");
+  queue_string_insert(queue_polish_result, "-");
+  /*
+   * queue_string_display(queue_polish_result);
+   */
 
   queue = parser(expression);
-  polish_parser(queue);
-  mu_assert("test_polish_parser failed: \n   error, test_parser 1 != 1", 1 == 1);
+  queue_polish = polish_parser(queue);
+
+
+  /*
+  queue_string_display(queue_polish);
+  printf("\n----------------\n");
+  queue_string_display(queue_polish_result);
+  */
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_example_4() {
+  // (sqrt(b * b - 4 * a * c) - b) / (2 * a)
+  // b b * 4 a * c * - sqrt b - 2 a * /
+  char expression[256] = "( sqrt ( b * b - 4 * a * c ) - b ) / ( 2 * a )";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+  // 52 1 2 + 4 * 3 -
+  // 52 1 2 + 4 * 3 -
+  // b b * 4 a * c * - sqrt b - 2 a * /
+  queue_string_insert(queue_polish_result, "b");
+  queue_string_insert(queue_polish_result, "b");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "4");
+  queue_string_insert(queue_polish_result, "a");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "c");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "-");
+  queue_string_insert(queue_polish_result, "sqrt");
+  queue_string_insert(queue_polish_result, "b");
+  queue_string_insert(queue_polish_result, "-");
+  queue_string_insert(queue_polish_result, "2");
+  queue_string_insert(queue_polish_result, "a");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "/");
+  /*
+   * queue_string_display(queue_polish_result);
+   */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  /*
+  queue_string_display(queue_polish_result);
+  printf("\n-------------------\n");
+  queue_string_display(queue_polish);
+  */
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_example_3() {
+  char expression[256] = "( 52 + 1 + 2 ) * 4 - 3";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+  // 52 1 + 2 + 4 * 3 -
+  queue_string_insert(queue_polish_result, "52");
+  queue_string_insert(queue_polish_result, "1");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "2");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "4");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "3");
+  queue_string_insert(queue_polish_result, "-");
+  /*
+   * queue_string_display(queue_polish_result);
+   */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_example_1() {
+  char expression[256] = "6 * ( 4 + 5 ) - 25 / ( 2 + 3 )";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+  // 21 53 + 2 * 25 3 * 29 + sqrt - sqrt
+  queue_string_insert(queue_polish_result, "6");
+  queue_string_insert(queue_polish_result, "4");
+  queue_string_insert(queue_polish_result, "5");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "25");
+  queue_string_insert(queue_polish_result, "2");
+  queue_string_insert(queue_polish_result, "3");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "/");
+  queue_string_insert(queue_polish_result, "-");
+  /*
+   * queue_string_display(queue_polish_result);
+   */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_big_expression() {
+  char expression[256] = "sqrt(6 + ( 4 - 1 ) * 2 - 3 / ( 7 + 5 ))";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+  // 21 53 + 2 * 25 3 * 29 + sqrt - sqrt
+  queue_string_insert(queue_polish_result, "6");
+  queue_string_insert(queue_polish_result, "4");
+  queue_string_insert(queue_polish_result, "1");
+  queue_string_insert(queue_polish_result, "-");
+  queue_string_insert(queue_polish_result, "2");
+  queue_string_insert(queue_polish_result, "*");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "3");
+  queue_string_insert(queue_polish_result, "7");
+  queue_string_insert(queue_polish_result, "5");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "/");
+  queue_string_insert(queue_polish_result, "-");
+  queue_string_insert(queue_polish_result, "sqrt");
+  /*
+   * queue_string_display(queue_polish_result);
+   */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_complex failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser() {
+  char expression[256] = "2.0 + 3.0";
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+
+  queue_string_insert(queue_polish_result, "2.0");
+  queue_string_insert(queue_polish_result, "3.0");
+  queue_string_insert(queue_polish_result, "+");
+
+  /*
+  queue_string_display(queue_polish_result);
+  */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_compose() {
+  char expression[256] = "(2.0 + 3.0) + (4.0 + 5.0)";
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+
+  queue_string_insert(queue_polish_result, "2.0");
+  queue_string_insert(queue_polish_result, "3.0");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "4.0");
+  queue_string_insert(queue_polish_result, "5.0");
+  queue_string_insert(queue_polish_result, "+");
+  queue_string_insert(queue_polish_result, "+");
+
+  /*
+  queue_string_display(queue_polish_result);
+  */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser_compose failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_sqrt() {
+  char expression[256] = "sqrt(2.0)";
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+
+  queue_string_insert(queue_polish_result, "2.0");
+  queue_string_insert(queue_polish_result, "sqrt");
+
+  /*
+  queue_string_display(queue_polish_result);
+  */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
+  return 0;
+}
+
+static char * test_polish_parser_parentesis() {
+  char expression[256] = "(2.0 + 3.0)";
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+  queue_polish_result = queue_string_create();
+
+  queue_string_insert(queue_polish_result, "2.0");
+  queue_string_insert(queue_polish_result, "3.0");
+  queue_string_insert(queue_polish_result, "+");
+
+  /*
+  queue_string_display(queue_polish_result);
+  */
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_parser failed: \n   error, test_parser 1 != 1", queue_string_equal(queue_polish, queue_polish_result) == 1);
   return 0;
 }
 
@@ -199,6 +473,14 @@ static char * all_tests() {
   mu_run_test(test_precedence_sqrt);
   mu_run_test(test_precedence_multipy);
   mu_run_test(test_precedence_no_defined);
+  mu_run_test(test_polish_parser_parentesis);
+  mu_run_test(test_polish_parser_sqrt);
+  mu_run_test(test_polish_parser_compose);
+  mu_run_test(test_polish_parser_big_expression);
+  mu_run_test(test_polish_parser_example_1);
+  mu_run_test(test_polish_parser_example_2);
+  mu_run_test(test_polish_parser_example_3);
+  mu_run_test(test_polish_parser_example_4);
   return 0;
 }
 

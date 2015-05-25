@@ -87,6 +87,26 @@ void queue_string_display(QueueString* queue) {
   queue->initial_position = temp_initial_position;
 }
 
+void queue_string_display_inline(QueueString* queue) {
+  int temp_initial_position;
+  int temp_current_position;
+  char *data;
+
+  temp_initial_position = queue->initial_position;
+  temp_current_position = queue->current_position;
+
+  while (queue->current_position) {
+    data = queue->data[queue->initial_position];
+    queue->initial_position = (queue->initial_position + 1) % QUEUE_CAPACITY;
+    queue->current_position--;
+
+    printf("%s ", data);
+  }
+
+  queue->current_position = temp_current_position;
+  queue->initial_position = temp_initial_position;
+}
+
 int queue_string_is_empty(QueueString* queue) {
   return (queue->current_position == 0);
 }
