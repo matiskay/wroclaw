@@ -22,12 +22,124 @@ static char * test_parser() {
   //char expression[256] = "2.0 + 3.0 - 4.0";
   //char expression[256] = "2.0+3.0-4.0";
   //char expression[256] = "(4.0 + 5.0)";
-
-  char expression[256] = "2.0 sqrt";
   //char expression[256] = "sqrt((53 + 21) * 2 – sqrt(29 + 3 * 25))";
+  
+  char expression[256] = "2.0 sqrt";
+  QueueString* queue; 
+  QueueString* queue_final; 
 
-  parser(expression);
-  mu_assert("test_parser failed: \n   error, test_parser 1 != 1", 1 == 1);
+  queue = queue_string_create();
+
+  queue_final = queue_string_create();
+  queue_string_insert(queue_final, "2.0");
+  queue_string_insert(queue_final, "sqrt");
+
+
+  queue = parser(expression);
+  mu_assert("test_parser failed: \n   error, test_parser 1 != 1", queue_string_equal(queue, queue_final) == 1);
+  return 0;
+}
+
+static char * test_parser_sqrt_and_parentesis_expression() {
+  char expression[256] = "sqrt(4.0 + (5.0 - 2.0))";
+  
+  QueueString* queue; 
+  QueueString* queue_final; 
+
+  queue = queue_string_create();
+
+  queue_final = queue_string_create();
+
+  queue_string_insert(queue_final, "sqrt");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "4.0");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "5.0");
+  queue_string_insert(queue_final, "-");
+  queue_string_insert(queue_final, "2.0");
+  queue_string_insert(queue_final, ")");
+  queue_string_insert(queue_final, ")");
+
+  queue = parser(expression);
+
+  /*
+  queue_string_display(queue);
+  queue_string_display(queue_final);
+  */
+
+  mu_assert("test_parser_complex_expression failed: \n   error, test_parser 1 != 1", queue_string_equal(queue, queue_final) == 1);
+  return 0;
+}
+
+static char * test_parser_complex_expression() {
+  //char expression[256] = "2 + 3";
+  //char expression[256] = "2.0 + 3.0";
+  //char expression[256] = "2.0+3.0";
+  //char expression[256] = "2.0+ 3.0 - 4.0";
+  //char expression[256] = "2.0 + 3.0 - 4.0";
+  //char expression[256] = "2.0+3.0-4.0";
+  //char expression[256] = "(4.0 + 5.0)";
+  char expression[256] = "sqrt((53 + 21) * 2 - sqrt(29 + 3 * 25))";
+  
+  QueueString* queue; 
+  QueueString* queue_final; 
+
+  queue = queue_string_create();
+
+  queue_final = queue_string_create();
+
+  queue_string_insert(queue_final, "sqrt");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "53");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "21");
+  queue_string_insert(queue_final, ")");
+  queue_string_insert(queue_final, "*");
+  queue_string_insert(queue_final, "2");
+  queue_string_insert(queue_final, "-");
+  queue_string_insert(queue_final, "sqrt");
+  queue_string_insert(queue_final, "(");
+  queue_string_insert(queue_final, "29");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "3");
+  queue_string_insert(queue_final, "*");
+  queue_string_insert(queue_final, "25");
+  queue_string_insert(queue_final, ")");
+  queue_string_insert(queue_final, ")");
+
+  queue = parser(expression);
+
+  /*
+  printf("number of elements queue %d \n", queue_string_number_of_elements(queue));
+  printf("number of elements queue final %d \n", queue_string_number_of_elements(queue_final));
+
+  queue_string_display(queue);
+  queue_string_display(queue_final);
+  */
+
+  mu_assert("test_parser_complex_expression failed: \n   error, test_parser 1 != 1", queue_string_equal(queue, queue_final) == 1);
+  return 0;
+}
+
+static char * test_parser_simple_expression() {
+  char expression[256] = "2 + 3";
+  
+  QueueString* queue; 
+  QueueString* queue_final; 
+
+  queue = queue_string_create();
+
+  queue_final = queue_string_create();
+
+  queue_string_insert(queue_final, "2");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "3");
+
+  queue = parser(expression);
+
+  mu_assert("test_parser_simple_expression failed: \n   error, test_parser 1 != 1", queue_string_equal(queue, queue_final) == 1);
   return 0;
 }
 
@@ -39,6 +151,9 @@ static char * test_unit() {
 static char * all_tests() {
   mu_run_test(test_unit);
   mu_run_test(test_parser);
+  mu_run_test(test_parser_complex_expression);
+  mu_run_test(test_parser_simple_expression);
+  mu_run_test(test_parser_sqrt_and_parentesis_expression);
   return 0;
 }
 

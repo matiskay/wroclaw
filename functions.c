@@ -2,11 +2,10 @@
 #include <stdio.h>
 #include <string.h>
 #include "functions.h"
-#include "queue_string.h"
 
 #define ASCII_CODE_EMPTY_SPACE ' '
 #define ASCII_CODE_END_OF_STRING '\0'
-#define DEBUG 1
+#define DEBUG 0
 
 /**
  * TODO: Change comments to slash star. Hint: grep -nR '//' .
@@ -26,7 +25,7 @@
  *    * The expression is no empty.
  *    * The expression is well defined.
  */
-void parser(char* expression) {
+QueueString* parser(char* expression) {
   char string[128];
   int string_index = 0;
   int index;
@@ -103,7 +102,13 @@ void parser(char* expression) {
     }
   }
 
-  queue_string_display(queue_string);
+  if (DEBUG) {
+    printf("Current queue_string: \n");
+    queue_string_display(queue_string);
+    printf("Number of elements of queue_string inside function %d \n", queue_string_number_of_elements(queue_string));
+  }
+
+  return queue_string;
 }
 
 int is_single_string_operator(char character) {
