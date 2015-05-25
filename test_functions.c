@@ -14,6 +14,45 @@
 
 int tests_run = 0;
 
+static char * test_precedence_no_defined() {
+  mu_assert("test_precedence_no_defined failed: \n   error, test_parser 1 != 1", precedence("p") == -1);
+  return 0;
+}
+
+static char * test_precedence_multipy() {
+  mu_assert("test_precedence_multipy failed: \n   error, test_parser 1 != 1", precedence("*") == 3);
+  return 0;
+}
+
+static char * test_precedence_sum() {
+  mu_assert("test_precedence_sum failed: \n   error, test_parser 1 != 1", precedence("+") == 2);
+  return 0;
+}
+
+static char * test_precedence_sqrt() {
+  mu_assert("test_precedence_sqrt failed: \n   error, test_parser 1 != 1", precedence("sqrt") == 4);
+  return 0;
+}
+
+static char * test_polish_parser() {
+  
+  char expression[256] = "2.0 + 3.0";
+  QueueString* queue; 
+  QueueString* queue_final; 
+
+  queue = queue_string_create();
+
+  queue_final = queue_string_create();
+  queue_string_insert(queue_final, "2.0");
+  queue_string_insert(queue_final, "+");
+  queue_string_insert(queue_final, "3.0");
+
+  queue = parser(expression);
+  polish_parser(queue);
+  mu_assert("test_polish_parser failed: \n   error, test_parser 1 != 1", 1 == 1);
+  return 0;
+}
+
 static char * test_parser() {
   //char expression[256] = "2 + 3";
   //char expression[256] = "2.0 + 3.0";
@@ -123,6 +162,7 @@ static char * test_parser_complex_expression() {
   return 0;
 }
 
+
 static char * test_parser_simple_expression() {
   char expression[256] = "2 + 3";
   
@@ -154,6 +194,11 @@ static char * all_tests() {
   mu_run_test(test_parser_complex_expression);
   mu_run_test(test_parser_simple_expression);
   mu_run_test(test_parser_sqrt_and_parentesis_expression);
+  mu_run_test(test_polish_parser);
+  mu_run_test(test_precedence_sum);
+  mu_run_test(test_precedence_sqrt);
+  mu_run_test(test_precedence_multipy);
+  mu_run_test(test_precedence_no_defined);
   return 0;
 }
 

@@ -111,6 +111,19 @@ QueueString* parser(char* expression) {
   return queue_string;
 }
 
+QueueString* polish_parser(QueueString* queue_expression) {
+  char* data;
+
+  queue_string_display(queue_expression);
+
+  while (! queue_string_is_empty(queue_expression)) {
+    data = queue_string_pop(queue_expression);
+    printf("data: %s \n", data);
+  }
+
+  return NULL;
+}
+
 int is_single_string_operator(char character) {
   switch (character) {
     case '+':
@@ -130,4 +143,18 @@ int is_parentesis(char character) {
       return 1;
   }
   return 0;
+}
+
+int precedence(char* string) {
+  if (strcmp(string, "(") == 0) {
+    return 1;
+  } else if (strcmp(string, "+") == 0 || strcmp(string, "-") == 0) {
+    return 2;
+  } else if (strcmp(string, "*") == 0 || strcmp(string, "/") == 0) {
+    return 3;
+  } else if (strcmp(string, "sqrt") == 0) {
+    return 4;
+  }
+  
+  return -1;
 }
