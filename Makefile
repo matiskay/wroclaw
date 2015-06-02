@@ -35,6 +35,7 @@ test:	 test_stack_string test_functions test_queue_string test_stack_float
 clean:
 	 rm *.out || exit 0
 
+# Promote this command to compile
 run:
 	 gcc -c main.c
 	 gcc -c queue_string.c
@@ -42,4 +43,4 @@ run:
 	 gcc -c stack_float.c
 	 gcc -c functions.c
 	 gcc -o main main.o functions.o queue_string.o stack_string.o stack_float.o
-	 ./main
+	 ./main "1 + (2 - (3 * ( 4 / ( 5 + ( 6 - 7 )))))"
