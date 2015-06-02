@@ -11,16 +11,13 @@
 #define DEBUG 0
 
 /**
+ * TODO: Avoid Magical Numbers.
  * TODO: Change comments to slash star. Hint: grep -nR '//' .
  */
 
 /* Lessons:
  *    * If you work with string check always the length of the string. The empty spaces can
  *    lead to bugs.
- */
-
-/**
- * TODO: Check if the token is an operator
  */
 
 /* Preconditions:
@@ -243,16 +240,18 @@ float polish_evaluation(QueueString *queue_polish_expression) {
         stack_float_push(stack, total);
       } else if (strcmp(data, "sqrt") == 0) {
         value1 = stack_float_pop(stack);
-        total = sqrt(value1);
+        total = (float) sqrt(value1);
 
         stack_float_push(stack, total);
       }
     } else {
-      number = atof(data);
+      number = (float) atof(data);
       stack_float_push(stack, number);
     }
   }
-  
+
+    stack_float_free(stack);
+
   return total;
 }
 
