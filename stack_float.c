@@ -11,8 +11,10 @@ struct stack_float {
 
 StackFloat* stack_float_create() {
   StackFloat* stack;
-  stack = (StackFloat *) malloc(sizeof(stack));
+
+  stack = (StackFloat*) malloc(sizeof(StackFloat));
   stack->index = 0;
+
   return stack;
 }
 

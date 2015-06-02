@@ -12,7 +12,7 @@ struct stack_string {
 
 StackString* stack_string_create() {
   StackString* stack;
-  stack = (StackString*) malloc(sizeof(stack));
+  stack = (StackString*) malloc(sizeof(StackString));
   stack->index = 0;
   return stack;
 }
