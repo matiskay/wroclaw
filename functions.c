@@ -211,46 +211,46 @@ float polish_evaluation(QueueString *queue_polish_expression) {
         ) {
 
       if (strcmp(data, "+") == 0) {
-        value2 = stack_float_pop(stack);
-        value1 = stack_float_pop(stack);
+        value2 = stack_float_pop(&stack);
+        value1 = stack_float_pop(&stack);
         total = value1 + value2;
 
-        stack_float_push(stack, total);
+        stack = stack_float_push(stack, total);
       } else if (strcmp(data, "-") == 0) {
-        value2 = stack_float_pop(stack);
-        value1 = stack_float_pop(stack);
+        value2 = stack_float_pop(&stack);
+        value1 = stack_float_pop(&stack);
 
         total = value1 - value2;
 
-        stack_float_push(stack, total);
+        stack = stack_float_push(stack, total);
       } else if (strcmp(data, "*") == 0) {
-        value2 = stack_float_pop(stack);
-        value1 = stack_float_pop(stack);
+        value2 = stack_float_pop(&stack);
+        value1 = stack_float_pop(&stack);
 
         total = value1 * value2;
 
-        stack_float_push(stack, total);
+        stack = stack_float_push(stack, total);
       } else if (strcmp(data, "/") == 0) {
-        value2 = stack_float_pop(stack);
-        value1 = stack_float_pop(stack);
+        value2 = stack_float_pop(&stack);
+        value1 = stack_float_pop(&stack);
 
         /* TODO: Handle division by zero. */
         total = value1 / value2;
 
-        stack_float_push(stack, total);
+        stack = stack_float_push(stack, total);
       } else if (strcmp(data, "sqrt") == 0) {
-        value1 = stack_float_pop(stack);
+        value1 = stack_float_pop(&stack);
         total = (float) sqrt(value1);
 
-        stack_float_push(stack, total);
+        stack = stack_float_push(stack, total);
       }
     } else {
       number = (float) atof(data);
-      stack_float_push(stack, number);
+      stack = stack_float_push(stack, number);
     }
   }
 
-    stack_float_free(stack);
+    stack_float_free(&stack);
 
   return total;
 }
