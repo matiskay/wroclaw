@@ -26,266 +26,266 @@
  *    * The expression is well defined.
  */
 QueueString* parser(char* expression) {
-  char string[128];
-  int string_index = 0;
-  int index;
-  QueueString* queue_string;
-  queue_string = queue_string_create();
+    char string[128];
+    int string_index = 0;
+    int index;
+    QueueString* queue_string;
+    queue_string = queue_string_create();
 
-  /*
-  printf("Hello from parser. \n");
-  printf("Value %s \n", expression);
+    /*
+    printf("Hello from parser. \n");
+    printf("Value %s \n", expression);
 
-  printf("Value %c \n", expression[0]);
-  */
-  
+    printf("Value %c \n", expression[0]);
+    */
 
-  for (index = 0; expression[index] != ASCII_CODE_END_OF_STRING; index++) {
 
-    if (is_single_string_operator(expression[index]) || is_parentesis(expression[index])) {
+    for (index = 0; expression[index] != ASCII_CODE_END_OF_STRING; index++) {
 
-      /* Avoid empty spaces as tokens */
-      if (string_index >= 1) {
-        string[string_index] = ASCII_CODE_END_OF_STRING;
+        if (is_single_string_operator(expression[index]) || is_parentesis(expression[index])) {
 
-        queue_string_insert(queue_string, string);
+            /* Avoid empty spaces as tokens */
+            if (string_index >= 1) {
+                string[string_index] = ASCII_CODE_END_OF_STRING;
 
-        if (DEBUG) {
-          printf("(1) Current Token:   %s --- %lu \n", string, strlen(string));
+                queue_string_insert(queue_string, string);
+
+                if (DEBUG) {
+                    printf("(1) Current Token:   %s --- %lu \n", string, strlen(string));
+                }
+                string_index = 0;
+            }
+
+            /* Process string operator and continue to next iteration */
+            string[string_index] = expression[index];
+            string[string_index + 1] = ASCII_CODE_END_OF_STRING;
+            queue_string_insert(queue_string, string);
+
+            if (DEBUG) {
+                printf("(2) Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
+            }
+
+            string_index = 0;
+            continue;
         }
-        string_index = 0;
-      }
 
-      /* Process string operator and continue to next iteration */
-      string[string_index] = expression[index];
-      string[string_index + 1] = ASCII_CODE_END_OF_STRING;
-      queue_string_insert(queue_string, string);
+        if (expression[index] == ASCII_CODE_EMPTY_SPACE && string_index != 0) {
+            /* printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]); */
+            string[string_index] = ASCII_CODE_END_OF_STRING;
+            queue_string_insert(queue_string, string);
 
-      if (DEBUG) {
-        printf("(2) Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
-      }
+            if (DEBUG) {
+                printf("(3) Current Token:   %s --- %lu \n", string, strlen(string));
+            }
 
-      string_index = 0;
-      continue;
+            string_index = 0;
+        }
+
+        /* Don't count empty spaces */
+        if (expression[index] != ASCII_CODE_EMPTY_SPACE) {
+            string[string_index] = expression[index];
+            string_index++;
+        }
     }
 
-    if (expression[index] == ASCII_CODE_EMPTY_SPACE && string_index != 0) {
-      /* printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]); */
-      string[string_index] = ASCII_CODE_END_OF_STRING;
-      queue_string_insert(queue_string, string);
+    /* Process the final string */
+    if (expression[index] == ASCII_CODE_END_OF_STRING) {
+        /* Exclude empty strings */
+        if (string_index > 0) {
+            string[string_index] = ASCII_CODE_END_OF_STRING;
+            queue_string_insert(queue_string, string);
 
-      if (DEBUG) {
-        printf("(3) Current Token:   %s --- %lu \n", string, strlen(string));
-      }
-
-      string_index = 0;
+            if (DEBUG) {
+                printf("(3) Current Token:   %s -- %lu \n", string, strlen(string));
+            }
+            string_index = 0;
+        }
     }
 
-    /* Don't count empty spaces */
-    if (expression[index] != ASCII_CODE_EMPTY_SPACE) {
-      string[string_index] = expression[index];
-      string_index++;
+    if (DEBUG) {
+        printf("Current queue_string: \n");
+        queue_string_display(queue_string);
+        printf("Number of elements of queue_string inside function %d \n", queue_string_number_of_elements(queue_string));
     }
-  }
 
-  /* Process the final string */
-  if (expression[index] == ASCII_CODE_END_OF_STRING) {
-    /* Exclude empty strings */
-    if (string_index > 0) {
-      string[string_index] = ASCII_CODE_END_OF_STRING;
-      queue_string_insert(queue_string, string);
-
-      if (DEBUG) {
-        printf("(3) Current Token:   %s -- %lu \n", string, strlen(string));
-      }
-      string_index = 0;
-    }
-  }
-
-  if (DEBUG) {
-    printf("Current queue_string: \n");
-    queue_string_display(queue_string);
-    printf("Number of elements of queue_string inside function %d \n", queue_string_number_of_elements(queue_string));
-  }
-
-  return queue_string;
+    return queue_string;
 }
 
 QueueString* polish_parser(QueueString* queue_expression) {
-  char* data;
+    char* data;
 
-  QueueString* queue_string_output;
-  StackString* stack_string_operators;
+    QueueString* queue_string_output;
+    StackString* stack_string_operators;
 
-  queue_string_output = queue_string_create();
-  stack_string_operators = stack_string_create();
+    queue_string_output = queue_string_create();
+    stack_string_operators = stack_string_create();
 
-  /*
-  queue_string_display(queue_expression);
-  */
+    /*
+    queue_string_display(queue_expression);
+    */
 
-  while (! queue_string_is_empty(queue_expression)) {
-    data = queue_string_pop(queue_expression);
+    while (! queue_string_is_empty(queue_expression)) {
+        data = queue_string_pop(queue_expression);
 
-    if (strcmp(data, "(") == 0) {
-      stack_string_push(stack_string_operators, data);
+        if (strcmp(data, "(") == 0) {
+            stack_string_operators = stack_string_push(stack_string_operators, data);
 
-    } else if (strcmp(data, ")") == 0) {
-      while (strcmp(stack_string_peep(stack_string_operators), "(") != 0) {
-        queue_string_insert(queue_string_output, stack_string_pop(stack_string_operators));
-      }
-      data = stack_string_pop(stack_string_operators);
-    } else if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
-              || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
-              || strcmp(data, "sqrt") == 0) {
+        } else if (strcmp(data, ")") == 0) {
+            while (strcmp(stack_string_peep(stack_string_operators), "(") != 0) {
+                queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
+            }
+            data = stack_string_pop(&stack_string_operators);
+        } else if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
+                   || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
+                   || strcmp(data, "sqrt") == 0) {
 
-      while (stack_string_is_empty(stack_string_operators) == 0
-            && (precedence(data) <= precedence(stack_string_peep(stack_string_operators)))) {
-        queue_string_insert(queue_string_output, stack_string_pop(stack_string_operators));
-      }
+            while (stack_string_is_empty(stack_string_operators) == 0
+                   && (precedence(data) <= precedence(stack_string_peep(stack_string_operators)))) {
+                queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
+            }
 
-      stack_string_push(stack_string_operators, data);
+            stack_string_operators = stack_string_push(stack_string_operators, data);
 
-      if (DEBUG) {
-        printf("-----> Operators:   %s \n", stack_string_peep(stack_string_operators));
-      }
+            if (DEBUG) {
+                printf("-----> Operators:   %s \n", stack_string_peep(stack_string_operators));
+            }
 
-    } else {
-      queue_string_insert(queue_string_output, data);
+        } else {
+            queue_string_insert(queue_string_output, data);
+        }
     }
-  }
 
-  /* Push the remaining operators. */
-  while (stack_string_is_empty(stack_string_operators) == 0) {
-    data = stack_string_pop(stack_string_operators);
-    if (strcmp(data, "(") != 0 && strcmp(data, ")") != 0) {
-      queue_string_insert(queue_string_output, data);
+    /* Push the remaining operators. */
+    while (stack_string_is_empty(stack_string_operators) == 0) {
+        data = stack_string_pop(&stack_string_operators);
+        if (strcmp(data, "(") != 0 && strcmp(data, ")") != 0) {
+            queue_string_insert(queue_string_output, data);
+        }
     }
-  }
 
-  /* Parse only the reaming operators */
-  while (stack_string_is_empty(stack_string_operators) == 0) {
-    if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
-              || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
-              || strcmp(data, "sqrt") == 0) {
-      queue_string_insert(queue_string_output, stack_string_pop(stack_string_operators));
+    /* Parse only the reaming operators */
+    while (stack_string_is_empty(stack_string_operators) == 0) {
+        if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
+            || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
+            || strcmp(data, "sqrt") == 0) {
+            queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
+        }
+        stack_string_pop(&stack_string_operators);
     }
-    stack_string_pop(stack_string_operators);
-  }
 
-  /*
-  stack_string_push(stack_string_operators, data);
-  */
+    /*
+    stack_string_push(stack_string_operators, data);
+    */
 
-  /*
-  while (!stack_string_is_empty(stack_string_operators)) {
-    printf("value in the stack:   %s\n", stack_string_pop(stack_string_operators));
-  }
-  */
+    /*
+    while (!stack_string_is_empty(stack_string_operators)) {
+      printf("value in the stack:   %s\n", stack_string_pop(stack_string_operators));
+    }
+    */
 
-  /*
-  printf("Polish Notation Result:   \n");
-  queue_string_display_inline(queue_string_output);
-  printf("\n");
-  */
-  return queue_string_output;
+    /*
+    printf("Polish Notation Result:   \n");
+    queue_string_display_inline(queue_string_output);
+    printf("\n");
+    */
+    return queue_string_output;
 }
 
 float polish_evaluation(QueueString *queue_polish_expression) {
-  float total;
-  float number;
-  float value1;
-  float value2;
-  char* data;
-  StackFloat* stack;
+    float total;
+    float number;
+    float value1;
+    float value2;
+    char* data;
+    StackFloat* stack;
 
-  stack = stack_float_create();
+    stack = stack_float_create();
 
-  while (!queue_string_is_empty(queue_polish_expression)) {
-    data = queue_string_pop(queue_polish_expression);
+    while (!queue_string_is_empty(queue_polish_expression)) {
+        data = queue_string_pop(queue_polish_expression);
 
-    /* Is data is an operator */
-    if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
-        || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
-        || strcmp(data, "sqrt") == 0
-        ) {
+        /* Is data is an operator */
+        if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
+            || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
+            || strcmp(data, "sqrt") == 0
+                ) {
 
-      if (strcmp(data, "+") == 0) {
-        value2 = stack_float_pop(&stack);
-        value1 = stack_float_pop(&stack);
-        total = value1 + value2;
+            if (strcmp(data, "+") == 0) {
+                value2 = stack_float_pop(&stack);
+                value1 = stack_float_pop(&stack);
+                total = value1 + value2;
 
-        stack = stack_float_push(stack, total);
-      } else if (strcmp(data, "-") == 0) {
-        value2 = stack_float_pop(&stack);
-        value1 = stack_float_pop(&stack);
+                stack = stack_float_push(stack, total);
+            } else if (strcmp(data, "-") == 0) {
+                value2 = stack_float_pop(&stack);
+                value1 = stack_float_pop(&stack);
 
-        total = value1 - value2;
+                total = value1 - value2;
 
-        stack = stack_float_push(stack, total);
-      } else if (strcmp(data, "*") == 0) {
-        value2 = stack_float_pop(&stack);
-        value1 = stack_float_pop(&stack);
+                stack = stack_float_push(stack, total);
+            } else if (strcmp(data, "*") == 0) {
+                value2 = stack_float_pop(&stack);
+                value1 = stack_float_pop(&stack);
 
-        total = value1 * value2;
+                total = value1 * value2;
 
-        stack = stack_float_push(stack, total);
-      } else if (strcmp(data, "/") == 0) {
-        value2 = stack_float_pop(&stack);
-        value1 = stack_float_pop(&stack);
+                stack = stack_float_push(stack, total);
+            } else if (strcmp(data, "/") == 0) {
+                value2 = stack_float_pop(&stack);
+                value1 = stack_float_pop(&stack);
 
-        /* TODO: Handle division by zero. */
-        total = value1 / value2;
+                /* TODO: Handle division by zero. */
+                total = value1 / value2;
 
-        stack = stack_float_push(stack, total);
-      } else if (strcmp(data, "sqrt") == 0) {
-        value1 = stack_float_pop(&stack);
-        total = (float) sqrt(value1);
+                stack = stack_float_push(stack, total);
+            } else if (strcmp(data, "sqrt") == 0) {
+                value1 = stack_float_pop(&stack);
+                total = (float) sqrt(value1);
 
-        stack = stack_float_push(stack, total);
-      }
-    } else {
-      number = (float) atof(data);
-      stack = stack_float_push(stack, number);
+                stack = stack_float_push(stack, total);
+            }
+        } else {
+            number = (float) atof(data);
+            stack = stack_float_push(stack, number);
+        }
     }
-  }
 
     stack_float_free(&stack);
 
-  return total;
+    return total;
 }
 
 int is_single_string_operator(char character) {
-  switch (character) {
-    case '+':
-    case '-':
-    case '*':
-    case '/':
-      return 1;
-  }
-  return 0;
+    switch (character) {
+        case '+':
+        case '-':
+        case '*':
+        case '/':
+            return 1;
+    }
+    return 0;
 }
 
 
 int is_parentesis(char character) {
-  switch (character) {
-    case '(':
-    case ')':
-      return 1;
-  }
-  return 0;
+    switch (character) {
+        case '(':
+        case ')':
+            return 1;
+    }
+    return 0;
 }
 
 int precedence(char* string) {
-  if (strcmp(string, "(") == 0) {
-    return 1;
-  } else if (strcmp(string, "+") == 0 || strcmp(string, "-") == 0) {
-    return 2;
-  } else if (strcmp(string, "*") == 0 || strcmp(string, "/") == 0) {
-    return 3;
-  } else if (strcmp(string, "sqrt") == 0) {
-    return 4;
-  }
-  
-  return -1;
+    if (strcmp(string, "(") == 0) {
+        return 1;
+    } else if (strcmp(string, "+") == 0 || strcmp(string, "-") == 0) {
+        return 2;
+    } else if (strcmp(string, "*") == 0 || strcmp(string, "/") == 0) {
+        return 3;
+    } else if (strcmp(string, "sqrt") == 0) {
+        return 4;
+    }
+
+    return -1;
 }

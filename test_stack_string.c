@@ -15,67 +15,94 @@
 
 int tests_run = 0;
 
-static char * test_stack_string_push() {
-  StackString * stack;
-  stack = stack_string_create();
-  stack_string_push(stack, "edgar");
 
-  mu_assert("test_stack_string_push", strcmp(stack_string_peep(stack), "edgar") == 0);
-  return 0;
+static char * test_stack_string_peep() {
+    StackString * stack;
+    stack = stack_string_create();
+    stack = stack_string_push(stack, "edgar");
+    stack = stack_string_push(stack, "katia");
+
+    mu_assert("test_stack_string_pop 1", strcmp(stack_string_peep(stack), "katia") == 0);
+
+    return 0;
+}
+
+static char * test_stack_string_pop() {
+    StackString * stack;
+    stack = stack_string_create();
+    stack = stack_string_push(stack, "edgar");
+    stack = stack_string_push(stack, "katia");
+
+    mu_assert("test_stack_string_pop 1", strcmp(stack_string_pop(&stack), "katia") == 0);
+    mu_assert("test_stack_string_pop 2", strcmp(stack_string_pop(&stack), "edgar") == 0);
+
+    return 0;
+}
+
+static char * test_stack_string_push() {
+    StackString * stack;
+    stack = stack_string_create();
+    stack = stack_string_push(stack, "edgar");
+
+    mu_assert("test_stack_string_push", strcmp(stack_string_peep(stack), "edgar") == 0);
+    return 0;
 }
 
 static char * test_stack_string_is_empty() {
-  StackString * stack;
-  stack = stack_string_create();
+    StackString * stack;
+    stack = stack_string_create();
 
-  mu_assert("test_stack_string_push", stack_string_is_empty(stack) == 1);
-  return 0;
+    mu_assert("test_stack_string_push", stack_string_is_empty(stack) == 1);
+    return 0;
 }
 
 
 static char * test_stack_string_is_not_empty() {
-  StackString * stack;
-  stack = stack_string_create();
-  stack_string_push(stack, "edgar");
+    StackString * stack;
+    stack = stack_string_create();
 
-  mu_assert("test_stack_string_push", stack_string_is_empty(stack) == 0);
-  return 0;
+    stack = stack_string_push(stack, "edgar");
+
+    mu_assert("test_stack_string_push", stack_string_is_empty(stack) == 0);
+    return 0;
 }
 
 
 static char * test_unit() {
-  mu_assert("test_unit failed: \n   error, test_unit 1 != 1", 1 == 1);
-  return 0;
+    mu_assert("test_unit failed: \n   error, test_unit 1 != 1", 1 == 1);
+    return 0;
 }
 
 static char * all_tests() {
-  mu_run_test(test_unit);
-  mu_run_test(test_stack_string_push);
-  mu_run_test(test_stack_string_is_empty);
-  mu_run_test(test_stack_string_is_not_empty);
-  return 0;
+    mu_run_test(test_unit);
+    mu_run_test(test_stack_string_push);
+    mu_run_test(test_stack_string_is_empty);
+    mu_run_test(test_stack_string_is_not_empty);
+    mu_run_test(test_stack_string_pop);
+    mu_run_test(test_stack_string_peep);
+    return 0;
 }
 
 int main(int argc, char **argv) {
-  char *result = all_tests();
+    char *result = all_tests();
 
-  printf(KMAG "---> Testing stack_string.c \n" RESET);
+    printf(KMAG "---> Testing stack_string.c \n" RESET);
 
-  if (result != 0) {
-    printf("   -_-_-_-_-_-_-_,------,      o \n");
-    printf("   _-_-_-_-_-_-_-|   /\\_/\\ \n");
-    printf("   -_-_-_-_-_-_-~|__( X .X)  +     + \n");
-    printf("   _-_-_-_-_-_-_- \"\"  \"\" \n");
-    printf(KRED "   ✗ %s \n" RESET, result);
-  }
-  else {
-    printf("   -_-_-_-_-_-_-_,------,      o \n");
-    printf("   _-_-_-_-_-_-_-|   /\\_/\\ \n");
-    printf("   -_-_-_-_-_-_-~|__( ^ .^)  +     + \n");
-    printf("   _-_-_-_-_-_-_-  \"\"  \"\" \n");
-    printf(KGRN "   ✓ ALL TESTS PASSED \n" RESET);
-  }
+    if (result != 0) {
+        printf("   -_-_-_-_-_-_-_,------,      o \n");
+        printf("   _-_-_-_-_-_-_-|   /\\_/\\ \n");
+        printf("   -_-_-_-_-_-_-~|__( X .X)  +     + \n");
+        printf("   _-_-_-_-_-_-_- \"\"  \"\" \n");
+        printf(KRED "   ✗ %s \n" RESET, result);
+    }
+    else {
+        printf("   -_-_-_-_-_-_-_,------,      o \n");
+        printf("   _-_-_-_-_-_-_-|   /\\_/\\ \n");
+        printf("   -_-_-_-_-_-_-~|__( ^ .^)  +     + \n");
+        printf("   _-_-_-_-_-_-_-  \"\"  \"\" \n");
+        printf(KGRN "   ✓ ALL TESTS PASSED \n" RESET);
+    }
 
-  printf(KCYN "   Summary:\n   Number of tests run: %d\n" RESET, tests_run);
-  return result != 0;
+    printf(KCYN "   Summary:\n   Number of tests run: %d\n" RESET, tests_run);
+    return result != 0;
 }
