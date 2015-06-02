@@ -1,5 +1,7 @@
-
 # wroclaw
+
+## TODO
+* Linked List
 
 # How to compile
 make run
