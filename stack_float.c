@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "stack_float.h"
 
-#define STACK_FLOAT_CAPACITY 50
+#define STACK_FLOAT_CAPACITY 100
 
 struct stack_float {
   int index;
