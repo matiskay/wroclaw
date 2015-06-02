@@ -70,6 +70,23 @@ static char * test_polish_evaluation_example1() {
   return 0;
 }
 
+static char * test_polish_evaluation_elaborated_case() {
+  char expression[256] = "1+(2-(3*(4/(5+(6-7)))))";
+
+  QueueString* queue; 
+  QueueString* queue_polish; 
+  QueueString* queue_polish_result; 
+
+  queue = queue_string_create();
+  queue_polish = queue_string_create();
+
+  queue = parser(expression);
+  queue_polish = polish_parser(queue);
+
+  mu_assert("test_polish_evaluation_elaborated_case failed: \n   error, test_parser 1 != 1", polish_evaluation(queue_polish) == 0);
+  return 0;
+}
+
 static char * test_polish_evaluation() {
   char expression[256] = "5 + 3";
 
@@ -566,6 +583,7 @@ static char * all_tests() {
   mu_run_test(test_polish_evaluation);
   mu_run_test(test_polish_evaluation_example1);
   mu_run_test(test_polish_evaluation_example2);
+  mu_run_test(test_polish_evaluation_elaborated_case);
   return 0;
 }
 
