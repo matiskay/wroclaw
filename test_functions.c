@@ -451,6 +451,10 @@ static char * test_parser_sqrt() {
 
 
     queue = parser(expression);
+
+    queue_string_display(queue);
+    queue_string_display(queue_final);
+
     mu_assert("test_parser_sqrt failed: \n   error, test_parser 1 != 1", queue_string_equal(queue, queue_final) == 1);
     return 0;
 }

@@ -4,10 +4,8 @@
 
 #include "queue_string.h"
 
-#define STRING_LENGTH 256
-
 struct queue_string {
-    char value[STRING_LENGTH];
+    char* value;
     struct queue_string* next;
 };
 
@@ -25,24 +23,21 @@ QueueString* queue_string_create_node() {
 
 
 QueueString* queue_string_insert(QueueString* queue, char* string) {
+    char* string_copy;
+
     QueueString* new_queue_node;
     QueueString* aux_queue_node;
     QueueString* aux_queue_node2;
 
-    int index;
-
     new_queue_node = queue_string_create_node();
 
-    index = 0;
 
 //    printf("value of the string %s \n", string);
+    string_copy = malloc(sizeof(char) * (strlen(string) + 1));
+    strcpy(string_copy, string);
 
-    while (string[index] != '\0') {
-        new_queue_node->value[index] = string[index];
-        index++;
-    }
+    new_queue_node->value = string_copy;
 
-    new_queue_node->value[index] = '\0';
 
 //    printf("value of the string in new node %s \n", new_queue_node->value);
 
@@ -68,15 +63,18 @@ char* queue_string_pop(QueueString** queue) {
     char* data;
     QueueString* current_queue_node;
 
-    if (queue == NULL) {
+    if (*queue == NULL) {
+        return NULL;
+    }
+
+    if (queue_string_is_empty(*queue)) {
         return NULL;
     }
 
     // Hard copy a.k.a. This is how things work in C.
     // This is because result = (*stack)->value; means that result is a pointer to the value
     // if the value is wipeout result will be null.
-    data = malloc(sizeof(char) * strlen((*queue)->value));
-    strcpy(data, (*queue)->value);
+    data = (*queue)->value;
 
     current_queue_node = *queue;
     *queue = current_queue_node->next;
@@ -123,16 +121,18 @@ int queue_string_is_empty(QueueString* queue) {
 // Review
 void queue_string_free(QueueString** queue) {
     QueueString* aux_stack_node;
+    int counter;
+    counter = 0;
 
-    for (aux_stack_node = *queue; aux_stack_node != NULL; aux_stack_node = aux_stack_node->next) {
-        QueueString* current_node = aux_stack_node;
+    for (aux_stack_node = (*queue); aux_stack_node != NULL; aux_stack_node = aux_stack_node->next) {
+        QueueString* current_node = (*queue)->next;
 
-        printf("data --> %s \n", current_node->value);
+        free(*queue);
+        *queue = current_node;
 
-        (*queue) = current_node->next;
-        free(current_node->value);
-        free(current_node);
+        counter++;
     }
+    printf("counter %d\n", counter);
 }
 
 int queue_string_number_of_elements(QueueString* queue) {
@@ -160,7 +160,7 @@ int queue_string_equal(QueueString* queue_string_first, QueueString* queue_strin
 
     for (aux_queue_string1 = queue_string_first; aux_queue_string1 != NULL; aux_queue_string1 = aux_queue_string1->next) {
         if (strcmp(aux_queue_string1->value, aux_queue_string2->value) != 0) {
-            printf("%s != %s", aux_queue_string1->value, aux_queue_string2->value);
+            printf("%s != %s \n", aux_queue_string1->value, aux_queue_string2->value);
             return 0;
         }
         aux_queue_string2 = aux_queue_string2->next;

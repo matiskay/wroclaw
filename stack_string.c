@@ -45,7 +45,7 @@ char* stack_string_pop(StackString** stack) {
     // Hard copy a.k.a. This is how things work in C.
     // This is because result = (*stack)->value; means that result is a pointer to the value
     // if the value is wipeout result will be null.
-    result = malloc(sizeof(char) * strlen((*stack)->value));
+    result = malloc(sizeof(char) * (strlen((*stack)->value) + 1));
     strcpy(result, (*stack)->value);
 
     current_stack_node = *stack;

@@ -72,6 +72,7 @@ QueueString* parser(char* expression) {
         if (expression[index] == ASCII_CODE_EMPTY_SPACE && string_index != 0) {
             /* printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]); */
             string[string_index] = ASCII_CODE_END_OF_STRING;
+
             queue_string = queue_string_insert(queue_string, string);
 
             if (DEBUG) {
@@ -96,6 +97,7 @@ QueueString* parser(char* expression) {
             queue_string = queue_string_insert(queue_string, string);
 
             if (DEBUG) {
+                queue_string_display(queue_string);
                 printf("(3) Current Token:   %s -- %lu \n", string, strlen(string));
             }
             string_index = 0;

@@ -20,6 +20,90 @@
 
 int tests_run = 0;
 
+static char * test_queue_string_free() {
+    QueueString* queue;
+    queue = queue_string_create();
+    queue = queue_string_insert(queue, "walter");
+    queue = queue_string_insert(queue, "jose");
+    queue = queue_string_insert(queue, "ricardo");
+
+    queue_string_free(&queue);
+
+    mu_assert("Failed test_queue_string_free", queue_string_is_empty(queue) == 1);
+
+    queue = queue_string_insert(queue, "walter");
+    queue = queue_string_insert(queue, "jose");
+    queue = queue_string_insert(queue, "ricardo");
+
+    queue_string_pop(&queue);
+    queue_string_pop(&queue);
+    queue_string_pop(&queue);
+
+    mu_assert("Failed test_queue_string_free", queue_string_is_empty(queue) == 1);
+
+    return 0;
+}
+
+static char * string_copystring_copy() {
+    char string[128];
+
+    QueueString* queue1;
+    QueueString* queue2;
+
+    queue1 = queue_string_create();
+    queue2 = queue_string_create();
+
+    string[0] = 'e';
+    string[1] = 'd';
+    string[2] = 'g';
+    string[3] = 'a';
+    string[4] = 'r';
+    string[5] = '\0';
+
+
+    queue1 = queue_string_insert(queue1, string);
+
+
+    string[0] = 'k';
+    string[1] = 'a';
+    string[2] = 't';
+    string[3] = 'i';
+    string[4] = 'a';
+    string[5] = 's';
+    string[6] = 't';
+    string[7] = 'a';
+    string[8] = 'r';
+    string[9] = '\0';
+
+    queue1 = queue_string_insert(queue1, string);
+
+
+    string[0] = 'a';
+    string[1] = 'b';
+    string[2] = 'c';
+    string[3] = '\0';
+
+    queue1 = queue_string_insert(queue1, string);
+
+
+    queue2 = queue_string_insert(queue2, "edgar");
+    queue2 = queue_string_insert(queue2, "katiastar");
+    queue2 = queue_string_insert(queue2, "abc");
+
+    queue_string_display(queue2);
+
+
+    mu_assert("string_copystring_copy failed", queue_string_equal(queue1, queue2) == 1);
+
+    queue_string_free(&queue1);
+
+    if (queue1 == NULL) {
+        printf("meh");
+    }
+    mu_assert("string_copystring_copy failed free", queue_string_is_empty(queue1) == 1);
+    return 0;
+}
+
 static char * test_queue_string_equal() {
     QueueString* queue1;
     QueueString* queue2;
@@ -104,7 +188,7 @@ static char * test_queue_string_insert() {
     queue = queue_string_insert(queue, "walter");
     queue = queue_string_insert(queue, "diego");
     queue = queue_string_insert(queue, "carlos");
-
+//
     mu_assert("edgar != edgar", strcmp("edgar", queue_string_pop(&queue)) == 0);
     mu_assert("juan != juan", strcmp("juan", queue_string_pop(&queue)) == 0);
     mu_assert("javier != javier", strcmp("javier", queue_string_pop(&queue)) == 0);
@@ -189,12 +273,16 @@ static char * all_tests() {
     mu_run_test(test_queue_string_insert);
     mu_run_test(test_queue_string_pop);
     mu_run_test(test_queue_string_is_not_empty);
+
 //    mu_run_test(test_queue_string_pop_in_an_empty_queue_string);
+
     mu_run_test(test_queue_string_number_of_elements);
     mu_run_test(test_queue_string_number_of_elements_counting_again);
     mu_run_test(test_queue_string_equal);
     mu_run_test(test_queue_string_not_equal);
     mu_run_test(test_queue_string_not_equal_in_number_of_elements);
+    mu_run_test(string_copystring_copy);
+    mu_run_test(test_queue_string_free);
     return 0;
 }
 
