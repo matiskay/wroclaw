@@ -48,7 +48,7 @@ QueueString* parser(char* expression) {
             if (string_index >= 1) {
                 string[string_index] = ASCII_CODE_END_OF_STRING;
 
-                queue_string_insert(queue_string, string);
+                queue_string = queue_string_insert(queue_string, string);
 
                 if (DEBUG) {
                     printf("(1) Current Token:   %s --- %lu \n", string, strlen(string));
@@ -59,7 +59,7 @@ QueueString* parser(char* expression) {
             /* Process string operator and continue to next iteration */
             string[string_index] = expression[index];
             string[string_index + 1] = ASCII_CODE_END_OF_STRING;
-            queue_string_insert(queue_string, string);
+            queue_string = queue_string_insert(queue_string, string);
 
             if (DEBUG) {
                 printf("(2) Operators ---> Current Token:   %s --- %lu \n", string, strlen(string));
@@ -72,7 +72,7 @@ QueueString* parser(char* expression) {
         if (expression[index] == ASCII_CODE_EMPTY_SPACE && string_index != 0) {
             /* printf("Value %c at index %i and integer value %d \n", expression[index], index, expression[index]); */
             string[string_index] = ASCII_CODE_END_OF_STRING;
-            queue_string_insert(queue_string, string);
+            queue_string = queue_string_insert(queue_string, string);
 
             if (DEBUG) {
                 printf("(3) Current Token:   %s --- %lu \n", string, strlen(string));
@@ -93,7 +93,7 @@ QueueString* parser(char* expression) {
         /* Exclude empty strings */
         if (string_index > 0) {
             string[string_index] = ASCII_CODE_END_OF_STRING;
-            queue_string_insert(queue_string, string);
+            queue_string = queue_string_insert(queue_string, string);
 
             if (DEBUG) {
                 printf("(3) Current Token:   %s -- %lu \n", string, strlen(string));
@@ -125,14 +125,14 @@ QueueString* polish_parser(QueueString* queue_expression) {
     */
 
     while (! queue_string_is_empty(queue_expression)) {
-        data = queue_string_pop(queue_expression);
+        data = queue_string_pop(&queue_expression);
 
         if (strcmp(data, "(") == 0) {
             stack_string_operators = stack_string_push(stack_string_operators, data);
 
         } else if (strcmp(data, ")") == 0) {
             while (strcmp(stack_string_peep(stack_string_operators), "(") != 0) {
-                queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
+                queue_string_output = queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
             }
             data = stack_string_pop(&stack_string_operators);
         } else if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
@@ -141,7 +141,7 @@ QueueString* polish_parser(QueueString* queue_expression) {
 
             while (stack_string_is_empty(stack_string_operators) == 0
                    && (precedence(data) <= precedence(stack_string_peep(stack_string_operators)))) {
-                queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
+                queue_string_output = queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
             }
 
             stack_string_operators = stack_string_push(stack_string_operators, data);
@@ -151,7 +151,7 @@ QueueString* polish_parser(QueueString* queue_expression) {
             }
 
         } else {
-            queue_string_insert(queue_string_output, data);
+            queue_string_output = queue_string_insert(queue_string_output, data);
         }
     }
 
@@ -159,7 +159,7 @@ QueueString* polish_parser(QueueString* queue_expression) {
     while (stack_string_is_empty(stack_string_operators) == 0) {
         data = stack_string_pop(&stack_string_operators);
         if (strcmp(data, "(") != 0 && strcmp(data, ")") != 0) {
-            queue_string_insert(queue_string_output, data);
+            queue_string_output = queue_string_insert(queue_string_output, data);
         }
     }
 
@@ -168,7 +168,7 @@ QueueString* polish_parser(QueueString* queue_expression) {
         if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0
             || strcmp(data, "*") == 0 || strcmp(data, "/") == 0
             || strcmp(data, "sqrt") == 0) {
-            queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
+            queue_string_output = queue_string_insert(queue_string_output, stack_string_pop(&stack_string_operators));
         }
         stack_string_pop(&stack_string_operators);
     }
@@ -202,7 +202,7 @@ float polish_evaluation(QueueString *queue_polish_expression) {
     stack = stack_float_create();
 
     while (!queue_string_is_empty(queue_polish_expression)) {
-        data = queue_string_pop(queue_polish_expression);
+        data = queue_string_pop(&queue_polish_expression);
 
         /* Is data is an operator */
         if (strcmp(data, "+") == 0 || strcmp(data, "-") == 0

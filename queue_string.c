@@ -4,169 +4,167 @@
 
 #include "queue_string.h"
 
-#define QUEUE_CAPACITY 100
 #define STRING_LENGTH 256
-#define ERROR_EMPTY_QUEUE 10
 
 struct queue_string {
-  /* Next element that will be pop */
-  int current_position;
-
-  int initial_position;
-  char data[QUEUE_CAPACITY][STRING_LENGTH];
+    char value[STRING_LENGTH];
+    struct queue_string* next;
 };
 
 QueueString* queue_string_create() {
-  QueueString* queue_string;
-  queue_string = (QueueString*) malloc(sizeof(QueueString));
-
-  queue_string->current_position = 0;
-  queue_string->initial_position = 0;
-  return queue_string;
-}
-
-void queue_string_insert(QueueString* queue, char* string) {
-  int next_free_position;
-  int c;
-
-  c = 0;
-
-  if (queue->current_position == QUEUE_CAPACITY) {
-    printf("You exceed the capacity of the Queue.");
-    exit(1);
-  }
-
-  next_free_position = (queue->initial_position + queue->current_position) % QUEUE_CAPACITY;
-
-  while (string[c] != '\0') {
-    queue->data[next_free_position][c] = string[c];
-    c++;
-  }
-
-  queue->data[next_free_position][c] = '\0';
-
-  queue->current_position++;
-}
-
-char* queue_string_pop(QueueString* queue) {
-  char *data;
-  if (queue_string_is_empty(queue)) {
     return NULL;
-  }
+}
 
-  data = queue->data[queue->initial_position];
-  queue->initial_position = (queue->initial_position + 1) % QUEUE_CAPACITY;
-  queue->current_position--;
+QueueString* queue_string_create_node() {
+    QueueString* queue_string;
+    queue_string = (QueueString*) malloc(sizeof(QueueString));
 
-  return data;
+    queue_string->next = NULL;
+    return queue_string;
+}
+
+
+QueueString* queue_string_insert(QueueString* queue, char* string) {
+    QueueString* new_queue_node;
+    QueueString* aux_queue_node;
+    QueueString* aux_queue_node2;
+
+    int index;
+
+    new_queue_node = queue_string_create_node();
+
+    index = 0;
+
+//    printf("value of the string %s \n", string);
+
+    while (string[index] != '\0') {
+        new_queue_node->value[index] = string[index];
+        index++;
+    }
+
+    new_queue_node->value[index] = '\0';
+
+//    printf("value of the string in new node %s \n", new_queue_node->value);
+
+    if (queue == NULL) {
+        new_queue_node->next = queue;
+        return new_queue_node;
+    } else {
+        // Walk until the end and insert.
+        // The last one will be the one we want.
+        // The last one is NULL that why we are using a QueueString pointer.
+        for (aux_queue_node = queue; aux_queue_node != NULL; aux_queue_node = aux_queue_node->next) {
+            aux_queue_node2 = aux_queue_node;
+        }
+
+        //printf("aux node queue %s\n", aux_queue_node2->value);
+
+        aux_queue_node2->next = new_queue_node;
+        return queue;
+    }
+}
+
+char* queue_string_pop(QueueString** queue) {
+    char* data;
+    QueueString* current_queue_node;
+
+    if (queue == NULL) {
+        return NULL;
+    }
+
+    // Hard copy a.k.a. This is how things work in C.
+    // This is because result = (*stack)->value; means that result is a pointer to the value
+    // if the value is wipeout result will be null.
+    data = malloc(sizeof(char) * strlen((*queue)->value));
+    strcpy(data, (*queue)->value);
+
+    current_queue_node = *queue;
+    *queue = current_queue_node->next;
+
+//    printf("current value in queue -- data %s \n", data);
+//    printf("current value in queue %s \n", (*queue)->value);
+
+    free(current_queue_node);
+
+    return data;
 }
 
 /**
  * TODO: Refactor this function. The current behaviour deletes all the elements.
  */
 void queue_string_display(QueueString* queue) {
-  int counter;
-  int temp_initial_position;
-  int temp_current_position;
-  char *data;
+    QueueString* aux_queue_node;
+    int counter;
 
-  counter = 1;
-  temp_initial_position = queue->initial_position;
-  temp_current_position = queue->current_position;
+    counter = 1;
 
-  while (queue->current_position) {
-    data = queue->data[queue->initial_position];
-    queue->initial_position = (queue->initial_position + 1) % QUEUE_CAPACITY;
-    queue->current_position--;
-
-    printf("%d.- %s \n", counter, data);
-    counter++;
-  }
-
-  queue->current_position = temp_current_position;
-  queue->initial_position = temp_initial_position;
+    for (aux_queue_node = queue; aux_queue_node != NULL; aux_queue_node = aux_queue_node->next) {
+        printf("%d.- %s \n", counter, aux_queue_node->value);
+        counter++;
+    }
 }
 
 void queue_string_display_inline(QueueString* queue) {
-  int temp_initial_position;
-  int temp_current_position;
-  char *data;
+    QueueString* aux_queue_node;
 
-  temp_initial_position = queue->initial_position;
-  temp_current_position = queue->current_position;
-
-  while (queue->current_position) {
-    data = queue->data[queue->initial_position];
-    queue->initial_position = (queue->initial_position + 1) % QUEUE_CAPACITY;
-    queue->current_position--;
-
-    printf("%s ", data);
-  }
-
-  queue->current_position = temp_current_position;
-  queue->initial_position = temp_initial_position;
+    for (aux_queue_node = queue; aux_queue_node != NULL; aux_queue_node = aux_queue_node->next) {
+        printf("%s ", aux_queue_node->value);
+    }
 }
 
 int queue_string_is_empty(QueueString* queue) {
-  return (queue->current_position == 0);
+    if (queue == NULL) {
+        return 1;
+    }
+
+    return 0;
 }
 
-void queue_string_free(QueueString* queue) {
-  free(queue);
+// Review
+void queue_string_free(QueueString** queue) {
+    QueueString* aux_stack_node;
+
+    for (aux_stack_node = *queue; aux_stack_node != NULL; aux_stack_node = aux_stack_node->next) {
+        QueueString* current_node = aux_stack_node;
+
+        printf("data --> %s \n", current_node->value);
+
+        (*queue) = current_node->next;
+        free(current_node->value);
+        free(current_node);
+    }
 }
 
-int queue_string_number_of_elements(QueueString* queue_string) {
-  return queue_string->current_position;
+int queue_string_number_of_elements(QueueString* queue) {
+    QueueString* aux_queue_node;
+    int number_of_elements;
+
+    number_of_elements = 0;
+
+    for (aux_queue_node = queue; aux_queue_node != NULL; aux_queue_node = aux_queue_node->next) {
+        number_of_elements++;
+    }
+
+    return number_of_elements;
 }
 
 int queue_string_equal(QueueString* queue_string_first, QueueString* queue_string_second) {
+    QueueString* aux_queue_string1;
+    QueueString* aux_queue_string2;
 
-  int temp_initial_position_first;
-  int temp_current_position_first;
-
-  int temp_initial_position_second;
-  int temp_current_position_second;
-
-  char *data_first;
-  char *data_second;
-
-  if (queue_string_number_of_elements(queue_string_first) != queue_string_number_of_elements(queue_string_second)) {
-    printf("Problem here in the number of elements \n");
-    return 0;
-  }
-
-  temp_initial_position_first = queue_string_first->initial_position;
-  temp_current_position_first = queue_string_first->current_position;
-
-  temp_initial_position_second = queue_string_second->initial_position;
-  temp_current_position_second = queue_string_second->current_position;
-
-  while (queue_string_first->current_position) {
-    data_first = queue_string_first->data[queue_string_first->initial_position];
-    queue_string_first->initial_position = (queue_string_first->initial_position + 1) % QUEUE_CAPACITY;
-
-    data_second = queue_string_second->data[queue_string_second->initial_position];
-    queue_string_second->initial_position = (queue_string_second->initial_position + 1) % QUEUE_CAPACITY;
-
-    if (strcmp(data_first, data_second) != 0) {
-      printf("Not equal here \n");
-      printf("data_first:   %s \n", data_first);
-      printf("data_second:   %s\n", data_second);
-      queue_string_first->current_position = temp_current_position_first;
-      queue_string_first->initial_position = temp_initial_position_first;
-
-      queue_string_second->current_position = temp_current_position_second;
-      queue_string_second->initial_position = temp_initial_position_second;
-      return 0;
+    if (queue_string_number_of_elements(queue_string_first) != queue_string_number_of_elements(queue_string_second)) {
+        return 0;
     }
-    queue_string_first->current_position--;
-  }
 
-  queue_string_first->current_position = temp_current_position_first;
-  queue_string_first->initial_position = temp_initial_position_first;
+    aux_queue_string2 = queue_string_second;
 
-  queue_string_second->current_position = temp_current_position_second;
-  queue_string_second->initial_position = temp_initial_position_second;
+    for (aux_queue_string1 = queue_string_first; aux_queue_string1 != NULL; aux_queue_string1 = aux_queue_string1->next) {
+        if (strcmp(aux_queue_string1->value, aux_queue_string2->value) != 0) {
+            printf("%s != %s", aux_queue_string1->value, aux_queue_string2->value);
+            return 0;
+        }
+        aux_queue_string2 = aux_queue_string2->next;
+    }
 
-  return 1;
+    return 1;
 }

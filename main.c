@@ -42,8 +42,8 @@ int main(int argc, char **argv) {
 
     printf("   Result: %2.2f \n", result);
 
-    queue_string_free(queue);
-    queue_string_free(queue_polish);
+    queue_string_free(&queue);
+    queue_string_free(&queue_polish);
   }
 
   return 0;

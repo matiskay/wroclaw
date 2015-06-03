@@ -9,4 +9,7 @@ add_library(queue_string STATIC queue_string.c)
 add_library(functions STATIC functions.c)
 add_executable(wroclaw main.c)
 
+add_executable(test_queue_string test_queue_string.c)
+
 target_link_libraries(wroclaw functions stack_float stack_string queue_string)
+target_link_libraries(test_queue_string queue_string)
