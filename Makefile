@@ -1,7 +1,10 @@
 all:
-	 gcc -c stack_string.c
 	 gcc -c main.c
-	 gcc -o main stack_string.o main.o
+	 gcc -c queue_string.c
+	 gcc -c stack_string.c
+	 gcc -c stack_float.c
+	 gcc -c functions.c
+	 gcc -o main main.o functions.o queue_string.o stack_string.o stack_float.o
 
 test_stack_float: clean
 	 gcc -c stack_float.c
